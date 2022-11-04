@@ -9,18 +9,31 @@ document.querySelector("form").addEventListener("submit", (e) => {
 
 function play(data)
 {
-    //console.log(data)
     let matches = data.matchAll(/(\/\/i.4cdn([/|.|\w|\s|-])*.jpg)/g);
-    console.log(matches)
-    let media = []
+    let media = [];
     for (let td of matches)
     {
-        console.log(td[0])
-        media.push("https:" + td[0])
-        let img = document.createElement('img')
-        u = "https:" + td[0]
-        img.src = u
-        document.querySelector('.figure').prepend(img)
+        url = "https:" + td[0];
+        url = url.replace("s.jpg", ".jpg");
+        console.log(url)
+        media.push(url);
     }
-    console.log(media)
+
+    media = [...new Set(media)];
+
+    let ix = 0;
+    document.querySelector(".figure__img").src = media[ix];
+
+    document.querySelector(".figure__prev").onclick = function() {
+        console.log('clicked prev')
+        --ix;
+        if (ix < 0)
+            ix = media.length - 1;
+        document.querySelector(".figure__img").src = media[ix];
+    }
+
+    document.querySelector(".figure__next").onclick = function() {
+        console.log('clicked prev')
+        document.querySelector(".figure__img").src = media[++ix % media.length]
+    }
 }
