@@ -31,6 +31,7 @@ function play(data)
     {
         document.querySelector(".figure__vid").src = media[ix];
         document.querySelector(".figure__vid").style.display = "block";
+        document.querySelector(".figure__vid").play();
     }
 
     document.querySelector(".figure__prev").onclick = function() {
@@ -47,6 +48,7 @@ function play(data)
     {
         document.querySelector(".figure__vid").src = media[ix];
         document.querySelector(".figure__vid").style.display = "block";
+        document.querySelector(".figure__vid").play();
         document.querySelector(".figure__img").style.display = "none";
     }
     }
@@ -63,6 +65,7 @@ function play(data)
     {
         document.querySelector(".figure__vid").src = media[ix];
         document.querySelector(".figure__vid").style.display = "block";
+        document.querySelector(".figure__vid").play();
         document.querySelector(".figure__img").style.display = "none";
     }
     }
