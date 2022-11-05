@@ -42,6 +42,13 @@ function play(data) {
         document.querySelector(".figure__vid").pause();
     });
 
+    document.querySelector(".figure__download").addEventListener("click", () => {
+        let dl = document.createElement('a');
+        dl.href = document.querySelector(".figure__vid").style.display == "block" ? document.querySelector(".figure__vid").src : document.querySelector(".figure__img").src;
+        dl.download = "file" + ix;
+        dl.click();
+    });
+
     function f_next()
     {
         ix = ++ix % media.length;
@@ -58,7 +65,7 @@ function play(data) {
     }
 
   function process_touchmove(e) {
-    
+    console.log(e.touches[0].target)
     if (e.touches[0].clientX > e.target.offsetWidth / 2)
         ix = ++ix % media.length;
     else
