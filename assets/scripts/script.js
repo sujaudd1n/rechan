@@ -14,7 +14,7 @@ let video = document.querySelector(".figure__vid");
 document.querySelector("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   // create source url
-  proxy_url = "https://api.codetabs.com/v1/proxy?quest=";
+  proxy_url = "https://cors-anywhere.herokuapp.com/";
   const url = proxy_url + document.querySelector(".form__url").value;
 
   let response = await fetch(url);
