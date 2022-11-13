@@ -27,7 +27,6 @@ document.querySelector("form").addEventListener("submit", async (e) => {
 
     let response = await fetch(url);
     if (response.ok) {
-      console.log(response);
       let source = await response.json();
       total = 0;
       media = get_urls(source, board);
@@ -59,14 +58,14 @@ function get_media_type(url) {
 
 function f_download() {
   let link = document.createElement("a");
-  let type = get_media_type(media[ix]);
+  let type = get_media_type(media[ix].url);
   if (type === "img") link.href = image.src;
   else {
     link.href = video.src;
     video.pause();
   }
   link.setAttribute("target", "_blank");
-  link.setAttribute("download", `file${ix}`);
+  link.setAttribute("download", `${media[ix].filename}`);
   link.click();
   link.remove();
 }
