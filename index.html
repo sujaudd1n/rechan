@@ -4,39 +4,53 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="4chan media viewer.">
     <meta name="referrer" content="no-referrer">
-    <title>4chan Navigator</title>
+    <title>Rechan</title>
     <link rel="stylesheet" href="/assets/styles/style.css">
     <script src="/assets/scripts/script.js" defer></script>
 </head>
 <body>
    <header class="header">
         <h1 class="header__title">Rechan</h1>
+        <a href="https://github.com/sujaudd1n/rechan#readme" target="_blank" class="header__docs">Docs</a>
    </header> 
-   <form class="form">
-        <input type="text" name="url" class="form__url" placeholder="https://boards.4channel.org/g/thread/89561849">
-        <input type="submit" value="Get Media" class="form__submit">
+
+   <div class="options">
+      <button type="button" class="options__button options__button--saved" data-formtype="saved">Saved</button>
+      <button type="button" class="options__button options__button--thread" data-formtype="thread">Thread</button>
+      <button type="button" class="options__button options__button--url" data-formtype="url">URL</button>
+   </div>
+
+   <form class="form" data-formtype="notype">
+        <input type="text" class="form__url" placeholder="https://boards.4channel.org/g/thread/89561849">
+        <input type="button" value="Play" class="form__submit">
    </form>
+   
+   <div class="threads">
+   </div>
+
    <figure class="figure">
         <div class="figure__content">
-          <img src="#" alt="" class="figure__img">
-          <video src="#" class="figure__vid">
+          <img src="" alt="" class="figure__img">
+          <video src="" class="figure__vid">
         </div>
         <div class="figure__info">
           <p class="figure__name"></p>
           <p class="figure__total"></p>
         </div>
-        <div class="figure__nav">
-          <button class="figure__download">&nbsp;</button>
-          <button class="figure__save">&nbsp;</button>
-          <button class="figure__prev">&nbsp;</button>
-          <button class="figure__play">&nbsp;</button>
-          <button class="figure__pause">&nbsp;</button>
-          <button class="figure__next">&nbsp;</button>
+        <div class="figure__controls">
+          <button class="figure__control figure__control--download">&nbsp;</button>
+          <button class="figure__control figure__control--save">&nbsp;</button>
+          <button class="figure__control figure__control--prev">&nbsp;</button>
+          <button class="figure__control figure__control--play">&nbsp;</button>
+          <button class="figure__control figure__control--pause">&nbsp;</button>
+          <button class="figure__control figure__control--next">&nbsp;</button>
         </div>
    </figure>
+
    <footer class="footer">
-     <p class="copyright">&copy; 2022 <a href="https://sujauddin.me">Sujauddin</a></p>
+     <p class="copyright">&copy; 2022 <a href="https://sujauddin.me" target="_blank">Sujauddin</a></p>
      <p class="note4">Note: All media contents belong to 4chan.</p>
    </footer>
 </body>

@@ -1,4 +1,8 @@
-// Set localstorage
+// Set thread urls
+if (!localStorage.getItem("thread_urls"))
+  localStorage.setItem("thread_urls", JSON.stringify([]));
+
+// Set single media url
 if (!localStorage.getItem("urls"))
   localStorage.setItem("urls", JSON.stringify([]));
 
@@ -11,36 +15,83 @@ let total;
 let image = document.querySelector(".figure__img");
 let video = document.querySelector(".figure__vid");
 
-// Fetch media
-document.querySelector("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  // create source url
-  proxy_url = "https://api.allorigins.win/raw?url=";
+// Add event listeners
+document
+  .querySelector(".figure__control--next")
+  .addEventListener("click", f_next);
+document
+  .querySelector(".figure__control--prev")
+  .addEventListener("click", f_prev);
+document
+  .querySelector(".figure__control--play")
+  .addEventListener("click", f_play);
+document
+  .querySelector(".figure__control--pause")
+  .addEventListener("click", f_pause);
+document
+  .querySelector(".figure__control--download")
+  .addEventListener("click", f_download);
+document
+  .querySelector(".figure__control--save")
+  .addEventListener("click", f_save);
 
-  let b_url = document.querySelector(".form__url").value;
+document
+  .querySelector(".options__button--url")
+  .addEventListener("click", show_form);
+document
+  .querySelector(".options__button--thread")
+  .addEventListener("click", show_form);
+document
+  .querySelector(".options__button--saved")
+  .addEventListener("click", show_form);
 
-  if (b_url !== "") {
-    b_url_array = b_url.split("/");
-    let board = b_url_array[3];
-    let b_id = b_url_array[5];
-    let url = proxy_url + `https://a.4cdn.org/${board}/thread/${b_id}.json`;
-
-    let response = await fetch(url);
-    if (response.ok) {
-      let source = await response.json();
-      total = 0;
-      media = get_urls(source, board);
-      ix = 0;
-    }
+function show_form(e) {
+  let form = document.querySelector(".form");
+  if (e.target.dataset.formtype === form.dataset.formtype) {
+    form.style.display = "none";
+    form.dataset.formtype = "notype";
   } else {
-    urls = JSON.parse(localStorage.getItem("urls"));
-    media = [...new Set(urls)];
-    ix = 0;
-    total = media.length;
-  }
+    form.style.display = "flex";
+    form.dataset.formtype = e.target.dataset.formtype;
 
-  if (media.length > 0) display();
+    switch (form.dataset.formtype) {
+      case "url":
+        form.children[0].setAttribute("placeholder", "url");
+        form.children[0].value = "";
+        break;
+      case "thread":
+        form.children[0].setAttribute("placeholder", "thread");
+        form.children[0].value = "";
+        break;
+      case "saved":
+        form.children[0].setAttribute("placeholder", "saved");
+        form.children[0].value = "";
+        break;
+    }
+  }
+}
+
+document.querySelector(".form__submit").addEventListener("click", (e) => {
+  if (e.target.parentElement.dataset.formtype === "url") {
+    let url = document.querySelector(".form__url").value;
+    let json_data = get_data(url);
+    let media = get_media(json_data);
+    console.log(media);
+  }
 });
+
+async function get_data(url) {
+  proxy_url = "https://api.allorigins.win/raw?url=";
+  url = url.split("/");
+  let board = url[3];
+  let board_id = url[5];
+  url = proxy_url + `https://a.4cdn.org/${board}/thread/${board_id}.json`;
+
+  let response = await fetch(url);
+  if (response.ok) {
+    return await response.json();
+  }
+}
 
 function display() {
   let type = get_media_type(media[ix].url);
@@ -74,7 +125,7 @@ function f_save() {
   let type = get_media_type(media[ix].url);
   if (type === "img") url = document.querySelector(".figure__img").src;
   else url = document.querySelector(".figure__vid").src;
-  urls.push({url: url, filename: media[ix].filename});
+  urls.push({ url: url, filename: media[ix].filename });
   localStorage.setItem("urls", JSON.stringify(urls));
 }
 
@@ -124,7 +175,8 @@ function display_video(url) {
   document.querySelector(".figure__vid").play();
   document.querySelector(".figure__vid").loop = true;
 }
-function get_urls(data, board) {
+async function get_media(data, board) {
+  console.log(data)
   let media = [];
   for (let td of data["posts"]) {
     if ("ext" in td) {
@@ -136,15 +188,3 @@ function get_urls(data, board) {
   }
   return [...new Set(media)];
 }
-
-// Add event listeners
-document.querySelector(".figure__next").addEventListener("click", f_next);
-document.querySelector(".figure__prev").addEventListener("click", f_prev);
-document.querySelector(".figure__play").addEventListener("click", f_play);
-document.querySelector(".figure__pause").addEventListener("click", f_pause);
-document
-  .querySelector(".figure__download")
-  .addEventListener("click", f_download);
-document.querySelector(".figure__save").addEventListener("click", f_save);
-image.addEventListener("pointerdown", process_pointerdown);
-video.addEventListener("pointerdown", process_pointerdown);
