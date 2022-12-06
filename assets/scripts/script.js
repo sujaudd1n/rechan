@@ -33,7 +33,9 @@ document
   .addEventListener("click", f_download);
 document
   .querySelector(".figure__control--save")
-  .addEventListener("click", () => {f_save(media[ix])});
+  .addEventListener("click", () => {
+    f_save(media[ix]);
+  });
 
 document
   .querySelector(".options__button--url")
@@ -45,8 +47,9 @@ document
   .querySelector(".options__button--saved")
   .addEventListener("click", show_form);
 
+let form = document.querySelector(".form");
+
 function show_form(e) {
-  let form = document.querySelector(".form");
   if (e.target.dataset.formtype === form.dataset.formtype) {
     form.style.display = "none";
     form.dataset.formtype = "notype";
@@ -62,42 +65,56 @@ function show_form(e) {
         form.children[1].value = "Play";
         break;
       case "thread":
-        form.children[0].setAttribute("placeholder", "thread");
-        form.children[0].value = "";
-        form.children[0].focus();
-        form.children[1].value = "Save";
+        render_thread();
         break;
       case "saved":
-        form.children[0].setAttribute("placeholder", "saved");
-        form.children[0].value = "";
-        form.children[0].focus();
-        form.children[1].value = "Save";
         render_saved();
         break;
     }
   }
 }
 
+function render_thread() {
+  form.children[0].setAttribute("placeholder", "thread");
+  form.children[0].value = "";
+  form.children[0].focus();
+  form.children[1].value = "Save";
+
+  document.querySelector(".figure").style.display = "none";
+  video.pause();
+  document.querySelector(".saved").style.display = "none";
+  document.querySelector(".threads").style.display = "block";
+}
+
 function render_saved() {
+  form.children[0].setAttribute("placeholder", "saved");
+  form.children[0].value = "";
+  form.children[0].focus();
+  form.children[1].value = "Save";
+
   document.querySelector(".figure").style.display = "none";
   video.pause();
   document.querySelector(".threads").style.display = "none";
   document.querySelector(".saved").style.display = "block";
 
-  let urls = JSON.parse(localStorage.getItem("urls"));
-  
+  document.querySelector(".saved").textContent = "";
 
-  for (let u of urls)
-  {
-    let p = document.createElement('p'); 
-    let a = document.createElement('a'); 
+  let urls = JSON.parse(localStorage.getItem("urls"));
+
+  for (let u of urls) {
+    let div = document.createElement("div");
+    let a = document.createElement("a");
+    let dlt = document.createElement("button");
+
+    dlt.textContent = "Delete";
 
     a.href = u.url;
     a.target = "_blank";
     a.textContent = u.name;
 
-    p.appendChild(a);
-    document.querySelector(".saved").appendChild(p);
+    div.appendChild(a);
+    div.appendChild(dlt);
+    document.querySelector(".saved").appendChild(div);
   }
 }
 
@@ -192,7 +209,7 @@ function process_pointerdown(e) {
 function display_image(url) {
   document.querySelector(".figure__img").src = url.url;
   document.querySelector(".figure__name").textContent =
-    "Filename: " + url.filename;
+    "Filename: " + url.name;
   document.querySelector(".figure__img").style.display = "block";
   document.querySelector(".figure__vid").style.display = "none";
   document.querySelector(".figure__vid").pause();
@@ -202,7 +219,7 @@ function display_image(url) {
 function display_video(url) {
   document.querySelector(".figure__vid").src = url.url;
   document.querySelector(".figure__name").textContent =
-    "Filename: " + url.filename;
+    "Filename: " + url.name;
   document.querySelector(".figure__vid").style.display = "block";
   document.querySelector(".figure__control--play").style.display = "block";
   document.querySelector(".figure__control--pause").style.display = "block";
