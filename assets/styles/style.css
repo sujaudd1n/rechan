@@ -21,7 +21,6 @@ body
     background-color: var(--dark);
     color: var(--light);
     font-size: 1.6rem;
-    height: 100vh;
     font-family: 'Poppins', sans-serif;
 
     display: flex;
@@ -202,8 +201,6 @@ input, button
 {
     display: flex;
     justify-content: space-between;
-    position: absolute;
-    bottom: 0;
 }
 .copyright, .note4
 {

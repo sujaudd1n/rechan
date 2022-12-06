@@ -8,9 +8,9 @@ if (!localStorage.getItem("urls"))
 
 // Get media from localstorage
 let urls = JSON.parse(localStorage.getItem("urls"));
-let media;
-let ix;
-let total;
+let media = [];
+let ix = 0;
+let total = 0;
 
 let image = document.querySelector(".figure__img");
 let video = document.querySelector(".figure__vid");
@@ -33,7 +33,7 @@ document
   .addEventListener("click", f_download);
 document
   .querySelector(".figure__control--save")
-  .addEventListener("click", f_save);
+  .addEventListener("click", () => {f_save(media[ix])});
 
 document
   .querySelector(".options__button--url")
@@ -58,25 +58,56 @@ function show_form(e) {
       case "url":
         form.children[0].setAttribute("placeholder", "url");
         form.children[0].value = "";
+        form.children[0].focus();
+        form.children[1].value = "Play";
         break;
       case "thread":
         form.children[0].setAttribute("placeholder", "thread");
         form.children[0].value = "";
+        form.children[0].focus();
+        form.children[1].value = "Save";
         break;
       case "saved":
         form.children[0].setAttribute("placeholder", "saved");
         form.children[0].value = "";
+        form.children[0].focus();
+        form.children[1].value = "Save";
+        render_saved();
         break;
     }
   }
 }
 
-document.querySelector(".form__submit").addEventListener("click", (e) => {
+function render_saved() {
+  document.querySelector(".figure").style.display = "none";
+  video.pause();
+  document.querySelector(".threads").style.display = "none";
+  document.querySelector(".saved").style.display = "block";
+
+  let urls = JSON.parse(localStorage.getItem("urls"));
+  
+
+  for (let u of urls)
+  {
+    let p = document.createElement('p'); 
+    let a = document.createElement('a'); 
+
+    a.href = u.url;
+    a.target = "_blank";
+    a.textContent = u.name;
+
+    p.appendChild(a);
+    document.querySelector(".saved").appendChild(p);
+  }
+}
+
+document.querySelector(".form__submit").addEventListener("click", async (e) => {
   if (e.target.parentElement.dataset.formtype === "url") {
     let url = document.querySelector(".form__url").value;
-    let json_data = get_data(url);
-    let media = get_media(json_data);
-    console.log(media);
+    let json_data = await get_data(url);
+    let board = url.split("/")[3];
+    let media = get_media(json_data, board);
+    display();
   }
 });
 
@@ -94,6 +125,7 @@ async function get_data(url) {
 }
 
 function display() {
+  document.querySelector(".figure").style.display = "flex";
   let type = get_media_type(media[ix].url);
   if (type === "img") display_image(media[ix]);
   else display_video(media[ix]);
@@ -121,12 +153,15 @@ function f_download() {
   link.remove();
 }
 
-function f_save() {
+function f_save(obj) {
+  /*
   let type = get_media_type(media[ix].url);
   if (type === "img") url = document.querySelector(".figure__img").src;
   else url = document.querySelector(".figure__vid").src;
-  urls.push({ url: url, filename: media[ix].filename });
-  localStorage.setItem("urls", JSON.stringify(urls));
+  */
+  let saved_urls = JSON.parse(localStorage.getItem("urls"));
+  saved_urls.push(obj);
+  localStorage.setItem("urls", JSON.stringify(saved_urls));
 }
 
 function f_play() {
@@ -161,30 +196,38 @@ function display_image(url) {
   document.querySelector(".figure__img").style.display = "block";
   document.querySelector(".figure__vid").style.display = "none";
   document.querySelector(".figure__vid").pause();
-  document.querySelector(".figure__play").style.display = "none";
-  document.querySelector(".figure__pause").style.display = "none";
+  document.querySelector(".figure__control--play").style.display = "none";
+  document.querySelector(".figure__control--pause").style.display = "none";
 }
 function display_video(url) {
   document.querySelector(".figure__vid").src = url.url;
   document.querySelector(".figure__name").textContent =
     "Filename: " + url.filename;
   document.querySelector(".figure__vid").style.display = "block";
-  document.querySelector(".figure__play").style.display = "block";
-  document.querySelector(".figure__pause").style.display = "block";
+  document.querySelector(".figure__control--play").style.display = "block";
+  document.querySelector(".figure__control--pause").style.display = "block";
   document.querySelector(".figure__img").style.display = "none";
   document.querySelector(".figure__vid").play();
   document.querySelector(".figure__vid").loop = true;
 }
-async function get_media(data, board) {
-  console.log(data)
-  let media = [];
+function get_media(data, board) {
   for (let td of data["posts"]) {
     if ("ext" in td) {
       m_url = `https://i.4cdn.org/${board}/${td.tim}${td.ext}`;
       m_filename = td.filename;
-      media.push({ url: m_url, filename: m_filename });
+      m_filesize = td.fsize;
+      m_fileuploader = td.name;
+      m_filetimestamp = td.now;
+      media.push({
+        url: m_url,
+        name: m_filename,
+        size: m_filesize,
+        uploader: m_fileuploader,
+        timestamp: m_filetimestamp,
+      });
       total++;
     }
   }
+
   return [...new Set(media)];
 }
