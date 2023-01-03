@@ -3,11 +3,11 @@ if (!localStorage.getItem("thread_urls"))
   localStorage.setItem("thread_urls", JSON.stringify([]));
 
 // Set single media url
-if (!localStorage.getItem("urls"))
-  localStorage.setItem("urls", JSON.stringify([]));
+if (!localStorage.getItem("media_urls"))
+  localStorage.setItem("media_urls", JSON.stringify([]));
 
 // Get media from localstorage
-let urls = JSON.parse(localStorage.getItem("urls"));
+let urls = JSON.parse(localStorage.getItem("media_urls"));
 let media = [];
 let ix = 0;
 let total = 0;
@@ -59,10 +59,7 @@ function show_form(e) {
 
     switch (form.dataset.formtype) {
       case "url":
-        form.children[0].setAttribute("placeholder", "url");
-        form.children[0].value = "";
-        form.children[0].focus();
-        form.children[1].value = "Play";
+        render_media();
         break;
       case "thread":
         render_thread();
@@ -72,6 +69,18 @@ function show_form(e) {
         break;
     }
   }
+}
+
+function render_media()
+{
+  form.children[0].value = "";
+  form.children[0].focus();
+  form.children[1].value = "Play";
+  form.children[0].setAttribute("placeholder", "url");
+
+  document.querySelector(".figure").style.display = "flex";
+  document.querySelector(".saved").style.display = "none";
+  document.querySelector(".threads").style.display = "none";
 }
 
 function render_thread() {
@@ -84,6 +93,33 @@ function render_thread() {
   video.pause();
   document.querySelector(".saved").style.display = "none";
   document.querySelector(".threads").style.display = "block";
+
+  let urls = JSON.parse(localStorage.getItem("thread_urls"));
+
+  document.querySelector(".threads").textContent = "";
+
+  for (let u of urls) {
+    let div = create_thread_div(u)
+    document.querySelector(".threads").appendChild(div);
+  }
+}
+
+function create_thread_div(u)
+{
+    let div = document.createElement("div");
+    div.setAttribute("class", "saved__items")
+    let a = document.createElement("a");
+    let dlt = document.createElement("button");
+
+    dlt.textContent = "Delete";
+
+    a.href = u;
+    a.target = "_blank";
+    a.textContent = "thread";
+
+    div.appendChild(a);
+    div.appendChild(dlt);
+    return div;
 }
 
 function render_saved() {
@@ -99,10 +135,18 @@ function render_saved() {
 
   document.querySelector(".saved").textContent = "";
 
-  let urls = JSON.parse(localStorage.getItem("urls"));
+  let urls = JSON.parse(localStorage.getItem("media_urls"));
 
   for (let u of urls) {
+    let div = create_saved_div(u)
+    document.querySelector(".saved").appendChild(div);
+ }
+}
+
+function create_saved_div(u)
+{
     let div = document.createElement("div");
+    div.setAttribute("class", "saved__items")
     let a = document.createElement("a");
     let dlt = document.createElement("button");
 
@@ -114,8 +158,9 @@ function render_saved() {
 
     div.appendChild(a);
     div.appendChild(dlt);
-    document.querySelector(".saved").appendChild(div);
-  }
+    return div;
+ 
+
 }
 
 document.querySelector(".form__submit").addEventListener("click", async (e) => {
@@ -126,6 +171,14 @@ document.querySelector(".form__submit").addEventListener("click", async (e) => {
     let media = get_media(json_data, board);
     display();
   }
+  else if (e.target.parentElement.dataset.formtype === "thread")
+  {
+    let url = document.querySelector(".form__url").value;
+    let saved_urls = JSON.parse(localStorage.getItem("thread_urls"));
+    saved_urls.push(url);
+    localStorage.setItem("thread_urls", JSON.stringify(saved_urls));
+  }
+
 });
 
 async function get_data(url) {
@@ -176,9 +229,9 @@ function f_save(obj) {
   if (type === "img") url = document.querySelector(".figure__img").src;
   else url = document.querySelector(".figure__vid").src;
   */
-  let saved_urls = JSON.parse(localStorage.getItem("urls"));
+  let saved_urls = JSON.parse(localStorage.getItem("media_urls"));
   saved_urls.push(obj);
-  localStorage.setItem("urls", JSON.stringify(saved_urls));
+  localStorage.setItem("media_urls", JSON.stringify(saved_urls));
 }
 
 function f_play() {

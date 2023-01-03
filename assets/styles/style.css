@@ -126,6 +126,19 @@ input, button
     display: none;
 }
 
+/* SAVED MEDIA*/
+.saved
+{
+    padding: 10px;
+    margin-top: 30px;;
+}
+.saved__items
+{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;;
+}
+
 .figure
 {
     padding: 10px;
