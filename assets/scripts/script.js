@@ -46,6 +46,9 @@ document
 document
   .querySelector(".options__button--saved")
   .addEventListener("click", show_form);
+document
+  .querySelector(".options__button--catalog")
+  .addEventListener("click", show_form);
 
 let form = document.querySelector(".form");
 
@@ -67,8 +70,25 @@ function show_form(e) {
       case "saved":
         render_saved();
         break;
+      case "catalog":
+        render_catalog();
+        break;
     }
   }
+}
+
+function render_catalog()
+{
+  form.children[0].value = "";
+  form.children[0].focus();
+  form.children[1].value = "Display";
+  form.children[0].setAttribute("placeholder", "board");
+
+  document.querySelector(".catalog").style.display = "block";
+  video.pause();
+  document.querySelector(".figure").style.display = "none";
+  document.querySelector(".saved").style.display = "none";
+  document.querySelector(".threads").style.display = "none";
 }
 
 function render_media()
@@ -81,6 +101,7 @@ function render_media()
   document.querySelector(".figure").style.display = "flex";
   document.querySelector(".saved").style.display = "none";
   document.querySelector(".threads").style.display = "none";
+  document.querySelector(".catalog").style.display = "none";
 }
 
 function render_thread() {
@@ -93,6 +114,7 @@ function render_thread() {
   video.pause();
   document.querySelector(".saved").style.display = "none";
   document.querySelector(".threads").style.display = "block";
+  document.querySelector(".catalog").style.display = "none";
 
   let urls = JSON.parse(localStorage.getItem("thread_urls"));
 
@@ -178,8 +200,69 @@ document.querySelector(".form__submit").addEventListener("click", async (e) => {
     saved_urls.push(url);
     localStorage.setItem("thread_urls", JSON.stringify(saved_urls));
   }
+  else if (e.target.parentElement.dataset.formtype === "catalog")
+  {
+    let board = document.querySelector(".form__url").value;
+    console.log("getting...")
+    let json_data = await get_catalog(board);
+    console.log("done...")
+    console.log(json_data)
 
+    let catalog_obj = []
+
+    for (let obj of json_data)
+    {
+      for (let sobj of obj.threads)
+      {
+        catalog_obj.push(sobj)
+      }
+    }
+    document.querySelector('.catalog').textContent = "";
+    display_catalog(catalog_obj)
+
+
+  }
 });
+
+function display_catalog(objs)
+{
+  for (let obj of objs)
+    document.querySelector('.catalog').appendChild(ct(obj))
+
+}
+
+function ct(obj)
+{
+  console.log(obj)
+
+  let div = document.createElement('div');
+  let img = document.createElement('p');
+  let no = document.createElement('a');
+  let sub = document.createElement('p');
+
+  img.textContent = obj.images;
+  no.textContent = `https://boards.4chan.org/gif/thread/${obj.no}`;
+  no.href = `https://boards.4chan.org/gif/thread/${obj.no}`;
+  no.target = "_blank";
+  sub.textContent = obj.sub;
+
+  div.appendChild(sub);
+  div.appendChild(img);
+  div.appendChild(no);
+  div.setAttribute('class', 'catalog-div')
+  return div;
+}
+
+
+async function get_catalog(board) {
+  proxy_url = "https://api.allorigins.win/raw?url=";
+  let url = proxy_url + `https://a.4cdn.org/${board}/catalog.json`
+
+  let response = await fetch(url);
+  if (response.ok) {
+    return await response.json();
+}
+}
 
 async function get_data(url) {
   proxy_url = "https://api.allorigins.win/raw?url=";

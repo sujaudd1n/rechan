@@ -139,6 +139,12 @@ input, button
     margin-bottom: 20px;;
 }
 
+.catalog-div
+{
+    padding: 10px;
+    margin-top: 20px;
+}
+
 .figure
 {
     padding: 10px;
