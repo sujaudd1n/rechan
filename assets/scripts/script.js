@@ -218,20 +218,20 @@ document.querySelector(".form__submit").addEventListener("click", async (e) => {
       }
     }
     document.querySelector('.catalog').textContent = "";
-    display_catalog(catalog_obj)
+    display_catalog(catalog_obj, board)
 
 
   }
 });
 
-function display_catalog(objs)
+function display_catalog(objs, board)
 {
   for (let obj of objs)
-    document.querySelector('.catalog').appendChild(ct(obj))
+    document.querySelector('.catalog').appendChild(ct(obj, board))
 
 }
 
-function ct(obj)
+function ct(obj, board)
 {
   console.log(obj)
 
@@ -241,8 +241,8 @@ function ct(obj)
   let sub = document.createElement('p');
 
   img.textContent = obj.images;
-  no.textContent = `https://boards.4chan.org/gif/thread/${obj.no}`;
-  no.href = `https://boards.4chan.org/gif/thread/${obj.no}`;
+  no.textContent = `https://boards.4chan.org/${board}/thread/${obj.no}`;
+  no.href = `https://boards.4chan.org/${board}/thread/${obj.no}`;
   no.target = "_blank";
   sub.textContent = obj.sub;
 
